@@ -1,6 +1,7 @@
 import { RadiacodeApi, RadiacodeApiDeviceSample } from "./api";
 import { Mutex } from "async-mutex";
-import { AccessoryConfig, AccessoryPlugin, API, Logging, Service } from "homebridge";
+import { AccessoryConfig, AccessoryPlugin, API, Logging, Service, uuid } from "homebridge";
+import { randomUUID } from "crypto";
 
 export = (api: API) => {
   api.registerAccessory("Radiacode", RadiacodePlugin);
@@ -71,8 +72,8 @@ class RadiacodePlugin implements AccessoryPlugin {
 
         return aq;
       });
-
-    const doserateCharacteristic = new api.hap.Characteristic('Dose Rate', "customdoserate", {
+    const doserateUUID = randomUUID();
+    const doserateCharacteristic = new api.hap.Characteristic('Dose Rate', doserateUUID, {
       format: api.hap.Formats.FLOAT,
       perms: [api.hap.Perms.NOTIFY, api.hap.Perms.PAIRED_READ],
       unit: "uSv/hr",

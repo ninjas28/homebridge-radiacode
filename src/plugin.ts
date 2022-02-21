@@ -39,15 +39,15 @@ class RadiacodePlugin implements AccessoryPlugin {
     // HomeKit Information Service
     this.informationService = new api.hap.Service.AccessoryInformation()
       .setCharacteristic(api.hap.Characteristic.Manufacturer, "Radiascan")
-      .setCharacteristic(api.hap.Characteristic.Model, "Radiascan 101")
+      .setCharacteristic(api.hap.Characteristic.Model, "Radiacode 101")
       .setCharacteristic(api.hap.Characteristic.Name, config.name);
     this.informationService.getCharacteristic(api.hap.Characteristic.SerialNumber).onGet(async () => {
       await this.getHWInfo();
       return this.deviceInfo.data['serial'] ?? "Unknown"
     })
     this.informationService.getCharacteristic(api.hap.Characteristic.FirmwareRevision).onGet(async () => {
-      await this.getHWInfo();
-      return this.deviceInfo.data['fw_version'] ?? "Unknown"
+      //await this.getHWInfo();
+      return /*this.deviceInfo.data['fw_version'] ?? */"Unknown"
     })
     // HomeKit Air Quality Service
     this.airQualityService = new api.hap.Service.AirQualitySensor("Radiation Levels");

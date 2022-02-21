@@ -1,4 +1,4 @@
-import { RadiacodeApi, RadiacodeApiDeviceSample } from "./api";
+import { RadiacodeApi, RadiacodeApiDeviceInfo, RadiacodeApiDeviceSample } from "./api";
 import { Mutex } from "async-mutex";
 import { AccessoryConfig, AccessoryPlugin, API, Logging, Service, uuid } from "homebridge";
 import { randomUUID } from "crypto";
@@ -20,6 +20,9 @@ class RadiacodePlugin implements AccessoryPlugin {
   private latestSamples: RadiacodeApiDeviceSample = {
     data: {}
   };
+  private deviceInfo: RadiacodeApiDeviceInfo = {
+    data: {}
+  }
   private latestSamplesTimestamp: number = 0;
 
   constructor(log: Logging, config: RadiacodePluginConfig, api: API) {
@@ -37,9 +40,15 @@ class RadiacodePlugin implements AccessoryPlugin {
     this.informationService = new api.hap.Service.AccessoryInformation()
       .setCharacteristic(api.hap.Characteristic.Manufacturer, "Radiascan")
       .setCharacteristic(api.hap.Characteristic.Model, "Radiascan 101")
-      .setCharacteristic(api.hap.Characteristic.Name, config.name)
-      .setCharacteristic(api.hap.Characteristic.SerialNumber, 'config.serialNumber')
-      .setCharacteristic(api.hap.Characteristic.FirmwareRevision, 'unknown');
+      .setCharacteristic(api.hap.Characteristic.Name, config.name);
+    this.informationService.getCharacteristic(api.hap.Characteristic.SerialNumber).onGet(async () => {
+      await this.getHWInfo();
+      return this.deviceInfo.data['serial'] ?? "Unknown"
+    })
+    this.informationService.getCharacteristic(api.hap.Characteristic.FirmwareRevision).onGet(async () => {
+      await this.getHWInfo();
+      return this.deviceInfo.data['fw_version'] ?? "Unknown"
+    })
     // HomeKit Air Quality Service
     this.airQualityService = new api.hap.Service.AirQualitySensor("Radiation Levels");
 
@@ -84,7 +93,6 @@ class RadiacodePlugin implements AccessoryPlugin {
       await this.getLatestSamples();
       return this.latestSamples.data['doserate'] ?? 0;
     });
-
     this.airQualityService.addCharacteristic(doserateCharacteristic);
 
     this.airQualityService.getCharacteristic(api.hap.Characteristic.StatusActive)
@@ -97,6 +105,18 @@ class RadiacodePlugin implements AccessoryPlugin {
   getServices(): Service[] {
     const services = [this.informationService, this.airQualityService];
     return services;
+  }
+
+  async getHWInfo() {
+    try {
+      this.deviceInfo = await this.radiacodeApi.getHWInfo() ?? {data:{}}
+      this.log.info(JSON.stringify(this.deviceInfo.data));
+    }
+    catch (err) {
+      if (err instanceof Error) {
+        this.log.error(err.message);
+      }
+    }
   }
 
   async getLatestSamples() {

@@ -40,7 +40,7 @@ class RadiacodePlugin implements AccessoryPlugin {
       .setCharacteristic(api.hap.Characteristic.SerialNumber, 'config.serialNumber')
       .setCharacteristic(api.hap.Characteristic.FirmwareRevision, 'unknown');
     // HomeKit Air Quality Service
-    this.airQualityService = new api.hap.Service.AirQualitySensor("Air Quality");
+    this.airQualityService = new api.hap.Service.AirQualitySensor("Dose Rate");
 
     this.airQualityService.getCharacteristic(api.hap.Characteristic.AirQuality)
       .onGet(async () => {
@@ -50,6 +50,7 @@ class RadiacodePlugin implements AccessoryPlugin {
 
         const doserate = this.latestSamples.data.doserate;
         if (doserate) {
+          this.log(doserate.toString(10))
           if (doserate >= 0.4) {
             aq = Math.max(aq, api.hap.Characteristic.AirQuality.POOR);
           }
@@ -59,24 +60,26 @@ class RadiacodePlugin implements AccessoryPlugin {
           else {
             aq = Math.max(aq, api.hap.Characteristic.AirQuality.EXCELLENT);
           }
+        } else {
+          this.log("doserate undefined?")
         }
 
         return aq;
       });
 
-    const doserateCharacteristic = new api.hap.Characteristic('Dose Rate', "b42e01aa-ade7-11e4-89d3-123b93f75cba", {
-      format: api.hap.Formats.FLOAT,
-      perms: [api.hap.Perms.NOTIFY, api.hap.Perms.PAIRED_READ],
-      unit: "uSv/hr",
-      minValue: 0,
-      maxValue: 999,
-      minStep: 0.001,
-    }).onGet(async () => {
-      await this.getLatestSamples();
-      return this.latestSamples.data.doserate ?? 0;
-    });
+    // const doserateCharacteristic = new api.hap.Characteristic('Dose Rate', "b42e01aa-ade7-11e4-89d3-123b93f75cba", {
+    //   format: api.hap.Formats.FLOAT,
+    //   perms: [api.hap.Perms.NOTIFY, api.hap.Perms.PAIRED_READ],
+    //   unit: "uSv/hr",
+    //   minValue: 0,
+    //   maxValue: 999,
+    //   minStep: 0.001,
+    // }).onGet(async () => {
+    //   await this.getLatestSamples();
+    //   return this.latestSamples.data.doserate ?? 0;
+    // });
 
-    this.airQualityService.addCharacteristic(doserateCharacteristic);
+    // this.airQualityService.addCharacteristic(doserateCharacteristic);
 
     this.airQualityService.getCharacteristic(api.hap.Characteristic.StatusActive)
       .onGet(async () => {

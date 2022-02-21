@@ -49,7 +49,8 @@ class RadiacodePlugin implements AccessoryPlugin {
         let aq = api.hap.Characteristic.AirQuality.UNKNOWN;
 
         const doserate = this.latestSamples.data.doserate;
-        if (doserate) {
+        this.log.info(JSON.stringify(this.latestSamples))
+        if (typeof doserate !== 'undefined') {
           this.log(doserate.toString(10))
           if (doserate >= 0.4) {
             aq = Math.max(aq, api.hap.Characteristic.AirQuality.POOR);
@@ -61,7 +62,7 @@ class RadiacodePlugin implements AccessoryPlugin {
             aq = Math.max(aq, api.hap.Characteristic.AirQuality.EXCELLENT);
           }
         } else {
-          this.log("doserate undefined?")
+          this.log.warn("doserate undefined?")
         }
 
         return aq;

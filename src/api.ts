@@ -15,7 +15,7 @@ export class RadiacodeApi {
       throw new Error("Radiacode API Client not initialized due to invalid configuration...");
     }
 
-    const response = await axios.get<RadiacodeApiDeviceSample>(this.clientAddress);
+    const response = await axios.get<RadiacodeApiDeviceSample>(this.clientAddress + '/doserate');
     return response.data;
   }
 }

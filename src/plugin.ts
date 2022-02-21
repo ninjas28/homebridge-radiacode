@@ -110,7 +110,7 @@ class RadiacodePlugin implements AccessoryPlugin {
   }
 
   getServices(): Service[] {
-    const services = [this.informationService, this.airQualityService];
+    const services = [this.informationService, this.airQualityService, this.doseRateService];
     return services;
   }
 

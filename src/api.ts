@@ -15,18 +15,7 @@ export class RadiacodeApi {
       throw new Error("Radiacode API Client not initialized due to invalid configuration...");
     }
 
-    const response = await axios.get<RadiacodeApiDeviceSample>(this.clientAddress + '/doserate')
-    .catch(function (error) {
-      console.log(error.toJSON());
-    });
-    return response?.data;
-  }
-  public async getHWInfo() {
-    if (this.clientAddress == null) {
-      throw new Error("Radiacode API Client not initialized due to invalid configuration...");
-    }
-
-    const response = await axios.get<RadiacodeApiDeviceInfo>(this.clientAddress + '/info')
+    const response = await axios.get<RadiacodeApiDeviceSample>(this.clientAddress + '/info')
     .catch(function (error) {
       console.log(error.toJSON());
     });
@@ -38,11 +27,6 @@ export interface RadiacodeApiDeviceSample {
   data: {
     doserate?: number;
     timestamp?: number;
-  }
-}
-
-export interface RadiacodeApiDeviceInfo {
-  data: {
     serial?: string;
     fw_version?: string;
     battery?: number;

@@ -1,4 +1,4 @@
-import { RadiacodeApi, RadiacodeApiDeviceInfo, RadiacodeApiDeviceSample } from "./api";
+import { RadiacodeApi, RadiacodeApiDeviceSample } from "./api";
 import { Mutex } from "async-mutex";
 import { AccessoryConfig, AccessoryPlugin, API, Logging, Service } from "homebridge";
 
@@ -21,9 +21,6 @@ class RadiacodePlugin implements AccessoryPlugin {
   private latestSamples: RadiacodeApiDeviceSample = {
     data: {}
   };
-  private deviceInfo: RadiacodeApiDeviceInfo = {
-    data: {}
-  }
   private latestSamplesTimestamp: number = 0;
 
   constructor(log: Logging, config: RadiacodePluginConfig, api: API) {
@@ -43,12 +40,12 @@ class RadiacodePlugin implements AccessoryPlugin {
       .setCharacteristic(api.hap.Characteristic.Model, "Radiacode 101")
       .setCharacteristic(api.hap.Characteristic.Name, config.name);
     this.informationService.getCharacteristic(api.hap.Characteristic.SerialNumber).onGet(async () => {
-      await this.getHWInfo();
-      return this.deviceInfo.data['serial'] ?? "Unknown"
+      await this.getLatestSamples();
+      return this.latestSamples.data['serial'] ?? "Unknown"
     })
     this.informationService.getCharacteristic(api.hap.Characteristic.FirmwareRevision).onGet(async () => {
-      //await this.getHWInfo();
-      return /*this.deviceInfo.data['fw_version'] ?? */"Unknown"
+      //await this.latestSamples();
+      return /*this.latestSamples.data['fw_version'] ?? */"Unknown"
     })
     // HomeKit Air Quality Service
     this.airQualityService = new api.hap.Service.AirQualitySensor("Radiation Levels");
@@ -107,17 +104,17 @@ class RadiacodePlugin implements AccessoryPlugin {
     this.batteryService = new api.hap.Service.Battery("Battery");
     this.batteryService.setCharacteristic(api.hap.Characteristic.ChargingState, 0)
     this.batteryService.getCharacteristic(api.hap.Characteristic.BatteryLevel).onGet(async () => {
-      await this.getHWInfo();
-      if (this.deviceInfo.data['battery']) {
-        return this.deviceInfo.data['battery']
+      await this.getLatestSamples();
+      if (this.latestSamples.data['battery']) {
+        return this.latestSamples.data['battery']
       } else {
         return 0;
       }
     });
     this.batteryService.getCharacteristic(api.hap.Characteristic.StatusLowBattery).onGet(async () => {
-      await this.getHWInfo();
-      if (this.deviceInfo.data['battery']) {
-        return this.deviceInfo.data['battery'] < 20
+      await this.getLatestSamples();
+      if (this.latestSamples.data['battery']) {
+        return this.latestSamples.data['battery'] < 20
       } else {
         return 0;
       }
@@ -127,18 +124,6 @@ class RadiacodePlugin implements AccessoryPlugin {
   getServices(): Service[] {
     const services = [this.informationService, this.airQualityService, this.doseRateService, this.batteryService];
     return services;
-  }
-
-  async getHWInfo() {
-    try {
-      this.deviceInfo = await this.radiacodeApi.getHWInfo() ?? {data:{}}
-      this.log.info(JSON.stringify(this.deviceInfo.data));
-    }
-    catch (err) {
-      if (err instanceof Error) {
-        this.log.error(err.message);
-      }
-    }
   }
 
   async getLatestSamples() {

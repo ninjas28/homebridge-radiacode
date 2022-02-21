@@ -48,7 +48,7 @@ class RadiacodePlugin implements AccessoryPlugin {
 
         let aq = api.hap.Characteristic.AirQuality.UNKNOWN;
 
-        const doserate = this.latestSamples.data.doserate;
+        const doserate = this.latestSamples.data['doserate'];
         this.log.info(JSON.stringify(this.latestSamples))
         if (typeof doserate !== 'undefined') {
           this.log(doserate.toString(10))

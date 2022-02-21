@@ -1,0 +1,21 @@
+{
+  "pluginAlias": "Radiacode",
+  "pluginType": "accessory",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "required": true,
+        "default": "Radiacode Device"
+      },
+      "radiacodeServer": {
+        "title": "Radiacode Server",
+        "type": "string",
+        "required": true,
+        "default": "localhost:8080"
+      }
+    }
+  }
+}

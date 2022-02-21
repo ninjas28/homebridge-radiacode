@@ -16,6 +16,7 @@ class RadiacodePlugin implements AccessoryPlugin {
   private readonly informationService: Service;
   private readonly airQualityService: Service;
   private readonly doseRateService: Service;
+  private readonly batteryService: Service;
 
   private latestSamples: RadiacodeApiDeviceSample = {
     data: {}
@@ -101,10 +102,30 @@ class RadiacodePlugin implements AccessoryPlugin {
         return 0;
       }
     });
+
+    //HomeKit BatteryService
+    this.batteryService = new api.hap.Service.Battery("Battery");
+    this.batteryService.setCharacteristic(api.hap.Characteristic.ChargingState, 0)
+    this.batteryService.getCharacteristic(api.hap.Characteristic.BatteryLevel).onGet(async () => {
+      await this.getHWInfo();
+      if (this.deviceInfo.data['battery']) {
+        return this.deviceInfo.data['battery']
+      } else {
+        return 0;
+      }
+    });
+    this.batteryService.getCharacteristic(api.hap.Characteristic.StatusLowBattery).onGet(async () => {
+      await this.getHWInfo();
+      if (this.deviceInfo.data['battery']) {
+        return this.deviceInfo.data['battery'] < 20
+      } else {
+        return 0;
+      }
+    });
   }
 
   getServices(): Service[] {
-    const services = [this.informationService, this.airQualityService, this.doseRateService];
+    const services = [this.informationService, this.airQualityService, this.doseRateService, this.batteryService];
     return services;
   }
 

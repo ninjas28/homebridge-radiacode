@@ -75,5 +75,6 @@ export interface RadiacodeApiDeviceInfo {
   data: {
     serial?: string;
     fw_version?: string;
+    battery?: number;
   }
 }

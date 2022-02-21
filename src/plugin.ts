@@ -96,7 +96,7 @@ class RadiacodePlugin implements AccessoryPlugin {
         this.log.info(`Refreshing latest samples...`)
 
         try {
-          this.latestSamples = await this.radiacodeApi.getLatestSamples();
+          this.latestSamples = await this.radiacodeApi.getLatestSamples() ?? {data:{}};
           this.latestSamplesTimestamp = Date.now();
           this.log.info(JSON.stringify(this.latestSamples.data));
         }

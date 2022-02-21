@@ -48,7 +48,7 @@ class RadiacodePlugin implements AccessoryPlugin {
 
         let aq = api.hap.Characteristic.AirQuality.UNKNOWN;
 
-        const doserate = this.latestSamples.data.doseRate;
+        const doserate = this.latestSamples.data.doserate;
         if (doserate) {
           if (doserate >= 0.4) {
             aq = Math.max(aq, api.hap.Characteristic.AirQuality.POOR);
@@ -73,7 +73,7 @@ class RadiacodePlugin implements AccessoryPlugin {
       minStep: 0.001,
     }).onGet(async () => {
       await this.getLatestSamples();
-      return this.latestSamples.data.doseRate ?? 0;
+      return this.latestSamples.data.doserate ?? 0;
     });
 
     this.airQualityService.addCharacteristic(doserateCharacteristic);

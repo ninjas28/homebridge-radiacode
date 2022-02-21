@@ -40,7 +40,7 @@ export class RadiacodeApi {
 
 export interface RadiacodeApiDeviceSample {
   data: {
-    doseRate?: number;
+    doserate?: number;
     timestamp?: number;
   }
 }

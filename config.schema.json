@@ -14,7 +14,7 @@
         "title": "Radiacode Server",
         "type": "string",
         "required": true,
-        "default": "localhost:8080"
+        "default": "http://localhost:8080"
       }
     }
   }

@@ -40,7 +40,7 @@ class RadiacodePlugin implements AccessoryPlugin {
       .setCharacteristic(api.hap.Characteristic.SerialNumber, 'config.serialNumber')
       .setCharacteristic(api.hap.Characteristic.FirmwareRevision, 'unknown');
     // HomeKit Air Quality Service
-    this.airQualityService = new api.hap.Service.AirQualitySensor("Dose Rate");
+    this.airQualityService = new api.hap.Service.AirQualitySensor("Radiation Levels");
 
     this.airQualityService.getCharacteristic(api.hap.Characteristic.AirQuality)
       .onGet(async () => {
@@ -72,7 +72,7 @@ class RadiacodePlugin implements AccessoryPlugin {
         return aq;
       });
 
-    const doserateCharacteristic = new api.hap.Characteristic('Dose Rate', "b42e01aa-ade7-11e4-89d3-123b93f75cba", {
+    const doserateCharacteristic = new api.hap.Characteristic('Dose Rate', "customdoserate", {
       format: api.hap.Formats.FLOAT,
       perms: [api.hap.Perms.NOTIFY, api.hap.Perms.PAIRED_READ],
       unit: "uSv/hr",

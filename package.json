@@ -1,6 +1,6 @@
 {
   "name": "homebridge-radiacode",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A Homebridge plugin for the Radiascan Radiacode 101 dosimeter and radiation meter.",
   "keywords": [
     "radiacode",

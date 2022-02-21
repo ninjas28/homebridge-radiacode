@@ -64,7 +64,7 @@ class RadiacodePlugin implements AccessoryPlugin {
     this.doseRateService.getCharacteristic(api.hap.Characteristic.Name).onGet(async () => {
       await this.getLatestSamples();
       if (this.latestSamples.data['doserate']) {
-        return "Dose Rate:\n" + this.latestSamples.data['doserate'].toPrecision(3).toString() + " uSv/hr"
+        return "Dose Rate:\n" + this.latestSamples.data['doserate'].toPrecision(3).toString() + " uSv hr"
       } else {
         return "Unknown";
       }

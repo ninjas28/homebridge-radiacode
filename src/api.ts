@@ -30,5 +30,6 @@ export interface RadiacodeApiDeviceSample {
     serial?: string;
     fw_version?: string;
     battery?: number;
+    fault?: number;
   }
 }

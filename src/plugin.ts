@@ -44,8 +44,8 @@ class RadiacodePlugin implements AccessoryPlugin {
       return this.latestSamples.data['serial'] ?? "Unknown"
     })
     this.informationService.getCharacteristic(api.hap.Characteristic.FirmwareRevision).onGet(async () => {
-      //await this.latestSamples();
-      return /*this.latestSamples.data['fw_version'] ?? */"Unknown"
+      await this.getLatestSamples();
+      return this.latestSamples.data['fw_version'] ?? "Unknown"
     })
     // HomeKit Air Quality Service
     this.airQualityService = new api.hap.Service.AirQualitySensor("Radiation Levels");
@@ -86,6 +86,16 @@ class RadiacodePlugin implements AccessoryPlugin {
         return this.latestSamples.data.timestamp != null && Date.now() / 1000 - this.latestSamples.data.timestamp < 2 * 60 * 60;
       });
     
+    this.airQualityService.getCharacteristic(api.hap.Characteristic.StatusFault)
+      .onGet(async () => {
+        await this.getLatestSamples();
+        if (this.latestSamples.data.fault === 0) {
+          return 0;
+        } else {
+          return 1;
+        }
+      });
+
     //HomeKit Occupancy Sensor (For reporting Dose Rate)
     this.doseRateService = new api.hap.Service.OccupancySensor("Dose Rate");
     this.doseRateService.setCharacteristic(api.hap.Characteristic.Name, "Dose Rate: " + this.latestSamples.data['doserate']?.toPrecision(3).toString() + " uSv hr")
@@ -99,6 +109,22 @@ class RadiacodePlugin implements AccessoryPlugin {
         return 0;
       }
     });
+
+    this.doseRateService.getCharacteristic(api.hap.Characteristic.StatusActive)
+      .onGet(async () => {
+        await this.getLatestSamples();
+        return this.latestSamples.data.timestamp != null && Date.now() / 1000 - this.latestSamples.data.timestamp < 2 * 60 * 60;
+      });
+    
+    this.doseRateService.getCharacteristic(api.hap.Characteristic.StatusFault)
+      .onGet(async () => {
+        await this.getLatestSamples();
+        if (this.latestSamples.data.fault === 0) {
+          return 0;
+        } else {
+          return 1;
+        }
+      });
 
     //HomeKit BatteryService
     this.batteryService = new api.hap.Service.Battery("Battery");

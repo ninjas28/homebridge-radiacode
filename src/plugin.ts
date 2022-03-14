@@ -44,8 +44,8 @@ class RadiacodePlugin implements AccessoryPlugin {
       return this.latestSamples.data['serial'] ?? "Unknown"
     })
     this.informationService.getCharacteristic(api.hap.Characteristic.FirmwareRevision).onGet(async () => {
-      //await this.latestSamples();
-      return /*this.latestSamples.data['fw_version'] ?? */"Unknown"
+      await this.getLatestSamples();
+      return this.latestSamples.data['fw_version'] ?? "Unknown"
     })
     // HomeKit Air Quality Service
     this.airQualityService = new api.hap.Service.AirQualitySensor("Radiation Levels");

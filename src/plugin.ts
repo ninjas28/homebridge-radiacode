@@ -15,7 +15,7 @@ class RadiacodePlugin implements AccessoryPlugin {
 
   private readonly informationService: Service;
   private readonly airQualityService: Service;
-  private readonly doseRateService: Service;
+  //private readonly doseRateService: Service;
   private readonly batteryService: Service;
 
   private latestSamples: RadiacodeApiDeviceSample = {
@@ -96,35 +96,35 @@ class RadiacodePlugin implements AccessoryPlugin {
         }
       });
 
-    //HomeKit Occupancy Sensor (For reporting Dose Rate)
-    this.doseRateService = new api.hap.Service.OccupancySensor("Dose Rate");
-    this.doseRateService.setCharacteristic(api.hap.Characteristic.Name, "Dose Rate: " + this.latestSamples.data['doserate']?.toPrecision(3).toString() + " uSv hr")
+    // //HomeKit Occupancy Sensor (For reporting Dose Rate)
+    // this.doseRateService = new api.hap.Service.OccupancySensor("Dose Rate");
+    // this.doseRateService.setCharacteristic(api.hap.Characteristic.Name, "Dose Rate: " + this.latestSamples.data['doserate']?.toPrecision(3).toString() + " uSv hr")
     
-    this.doseRateService.getCharacteristic(api.hap.Characteristic.OccupancyDetected).onGet(async () => {
-      await this.getLatestSamples();
-      this.doseRateService.setCharacteristic(api.hap.Characteristic.Name, "Dose Rate: " + this.latestSamples.data['doserate']?.toPrecision(3).toString() + " uSv hr")
-      if (this.latestSamples.data['doserate'] && this.latestSamples.data['doserate'] >= 0.2) {
-        return 1
-      } else {
-        return 0;
-      }
-    });
+    // this.doseRateService.getCharacteristic(api.hap.Characteristic.OccupancyDetected).onGet(async () => {
+    //   await this.getLatestSamples();
+    //   this.doseRateService.setCharacteristic(api.hap.Characteristic.Name, "Dose Rate: " + this.latestSamples.data['doserate']?.toPrecision(3).toString() + " uSv hr")
+    //   if (this.latestSamples.data['doserate'] && this.latestSamples.data['doserate'] >= 0.2) {
+    //     return 1
+    //   } else {
+    //     return 0;
+    //   }
+    // });
 
-    this.doseRateService.getCharacteristic(api.hap.Characteristic.StatusActive)
-      .onGet(async () => {
-        await this.getLatestSamples();
-        return this.latestSamples.data.timestamp != null && Date.now() / 1000 - this.latestSamples.data.timestamp < 2 * 60 * 60;
-      });
+    // this.doseRateService.getCharacteristic(api.hap.Characteristic.StatusActive)
+    //   .onGet(async () => {
+    //     await this.getLatestSamples();
+    //     return this.latestSamples.data.timestamp != null && Date.now() / 1000 - this.latestSamples.data.timestamp < 2 * 60 * 60;
+    //   });
     
-    this.doseRateService.getCharacteristic(api.hap.Characteristic.StatusFault)
-      .onGet(async () => {
-        await this.getLatestSamples();
-        if (this.latestSamples.data.fault === 0) {
-          return 0;
-        } else {
-          return 1;
-        }
-      });
+    // this.doseRateService.getCharacteristic(api.hap.Characteristic.StatusFault)
+    //   .onGet(async () => {
+    //     await this.getLatestSamples();
+    //     if (this.latestSamples.data.fault === 0) {
+    //       return 0;
+    //     } else {
+    //       return 1;
+    //     }
+    //   });
 
     //HomeKit BatteryService
     this.batteryService = new api.hap.Service.Battery("Battery");
@@ -148,7 +148,7 @@ class RadiacodePlugin implements AccessoryPlugin {
   }
 
   getServices(): Service[] {
-    const services = [this.informationService, this.airQualityService, this.doseRateService, this.batteryService];
+    const services = [this.informationService, this.airQualityService, this.batteryService];
     return services;
   }
 
